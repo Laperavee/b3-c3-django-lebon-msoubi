@@ -35,7 +35,18 @@ def delete_password(request, password_id):
         return JsonResponse({'message': 'Password deleted successfully'})
 
     return JsonResponse({'message': 'Invalid request'}, status=400)
+def export_passwords_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="passwords.csv"'
 
+    writer = csv.writer(response)
+    writer.writerow(['site', 'name_site', 'username', 'password'])
+
+    passwords = Password.objects.all()
+    for password in passwords:
+        writer.writerow([password.site, password.name_site, password.username, password.password])
+
+    return response
 def tables(request):
   passwords = Password.objects.all()
   return render(request, "pages/index.html", {"passwords" : passwords})
