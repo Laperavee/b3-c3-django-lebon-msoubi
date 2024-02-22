@@ -6,5 +6,7 @@ from . import views
 
 urlpatterns = [
   path(''       , views.tables,  name='index'),
+  path('password/', views.password, name='password'),
+
 ]
 
