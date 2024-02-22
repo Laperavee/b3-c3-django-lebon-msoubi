@@ -11,5 +11,6 @@ urlpatterns = [
   path('delete_password/<int:password_id>/', views.delete_password, name='delete_password'),
   path('export_passwords_csv/', views.export_passwords_csv, name='export_passwords_csv'),
   path('import_passwords_csv/', views.import_passwords_csv, name='import_passwords_csv'),
+  path('generator/', views.password_generator, name='generator'),
 ]
 
