@@ -27,6 +27,14 @@ def edit_password(request, password_id):
         form = PasswordForm(instance=password_instance)
 
     return render(request, "pages/edit_password.html", {'form': form, 'password': password_instance})
+def delete_password(request, password_id):
+    password_instance = get_object_or_404(Password, id=password_id)
+
+    if request.method == "POST":
+        password_instance.delete()
+        return JsonResponse({'message': 'Password deleted successfully'})
+
+    return JsonResponse({'message': 'Invalid request'}, status=400)
 
 def tables(request):
   passwords = Password.objects.all()
