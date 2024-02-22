@@ -74,3 +74,12 @@ def export_passwords_csv(request):
 def tables(request):
   passwords = Password.objects.all()
   return render(request, "pages/index.html", {"passwords" : passwords})
+def password_generator(request):
+    length = 20
+    lower = string.ascii_lowercase
+    upper = string.ascii_uppercase
+    num = string.digits
+    symbols = string.punctuation
+    all = lower + upper + num + symbols
+    generated_password = ''.join(secrets.choice(all) for i in range(length))
+    return render(request, "pages/password_generator.html", {'generated_password': generated_password})
