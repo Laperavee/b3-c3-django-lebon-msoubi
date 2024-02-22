@@ -15,6 +15,19 @@ def password(request):
         form = PasswordForm()
 
     return render(request, "pages/password_form.html", {'form': form})
+def edit_password(request, password_id):
+    password_instance = get_object_or_404(Password, id=password_id)
+
+    if request.method == "POST":
+        form = PasswordForm(request.POST, instance=password_instance)
+        if form.is_valid():
+            form.save()
+            return redirect('index')
+    else:
+        form = PasswordForm(instance=password_instance)
+
+    return render(request, "pages/edit_password.html", {'form': form, 'password': password_instance})
+
 def tables(request):
   passwords = Password.objects.all()
   return render(request, "pages/index.html", {"passwords" : passwords})
