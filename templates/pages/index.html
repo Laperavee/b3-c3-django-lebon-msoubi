@@ -1,0 +1,104 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block breadcrumbs %}{% endblock breadcrumbs %}
+
+{% block content %}
+
+  <!-- [ Main Content ] start -->
+  <div class="row">
+    <!--[ Recent Users ] start-->
+    <div class="col-12">
+            {% if request.user.is_authenticated %}
+      <div class="card Recent-Users">
+        <div class="card-header">
+          <h5>Passwords</h5>
+        </div>
+        <div class="card-block px-0 py-3">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <tbody>
+                {% for password in passwords %}
+                  <tr class="unread">
+                    <td><img class="rounded-circle" style="width:40px;" src="{% static 'assets/images/user/default-icon.png' %}"
+                        alt="activity-user">
+                    </td>
+                    <td>
+                      <p class="m-0">{{ password.name_site }}</p>
+                    </td>
+                    <td>
+                      <h6 class="m-0">{{ password.username }}</h6>
+                    </td>
+                    <td>
+                      <h6 class="text-muted">
+                          <span class="password-text" id="password_{{ password.id }}" data-password="{{ password.password }}">*****</span>
+                          <a class="toggle-password btn btn-link" onclick="toggleText({{ password.id }})">
+                              <img class="password-image" style="width:40px;" src="{% static 'assets/images/user/hide.png' %}" alt="Password Image">
+                          </a>
+                      </h6>
+                    </td>
+                      <td>
+                          <a href="{% url 'edit_password' password.id %}" class="label theme-bg text-white f-12">Edit</a>
+                          <a href="#" class="delete-password-link label theme-bg2text-white f-12" data-password-id="{{ password.id }}">Delete</a>
+                      </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+            <a href="{% url 'password' %}" type="button" class="btn btn-primary">Add Password</a>
+
+      {% else %}
+      <a href="{% url 'profile' %}" type="button" class="btn btn-primary">Log-In</a>
+      {% endif %}
+    </div>
+    <!--[ Recent Users ] end-->
+  </div>
+  <!-- [ Main Content ] end -->
+<script>
+    function toggleText(passwordId) {
+        var displayText = document.getElementById("password_" + passwordId);
+        var originalText = displayText.textContent;
+        displayText.textContent = displayText.getAttribute('data-password');
+
+        // Rétablir le texte original après 5 secondes
+        setTimeout(function() {
+            displayText.textContent = originalText;
+        }, 5000);
+    }
+     document.addEventListener('DOMContentLoaded', function () {
+        var deleteLinks = document.querySelectorAll('.delete-password-link');
+        deleteLinks.forEach(function (deleteLink) {
+            deleteLink.addEventListener('click', function (event) {
+                event.preventDefault();
+                var confirmDelete = confirm("Voulez-vous vraiment supprimer ce mot de passe ?");
+                if (confirmDelete) {
+                  var passwordId = deleteLink.getAttribute('data-password-id');
+
+                  // Récupérer le jeton CSRF depuis les cookies
+                  var csrfToken = document.cookie.replace(/(?:(?:^|.*;\s*)csrftoken\s*=\s*([^;]*).*$)|^.*$/, "$1");
+
+                  // Envoyer une requête Ajax avec le jeton CSRF
+                  var xhr = new XMLHttpRequest();
+                  xhr.open('POST', '/delete_password/' + passwordId + '/');
+                  xhr.setRequestHeader('Content-Type', 'application/json');
+                  xhr.setRequestHeader('X-CSRFToken', csrfToken);
+
+                  xhr.onload = function () {
+                    if (xhr.status === 200) {
+                      // Mettez à jour la page ou effectuez d'autres actions nécessaires
+                      window.location.reload();
+                    } else {
+                      console.error('Erreur lors de la suppression du mot de passe');
+                    }
+                  };
+                }
+
+                xhr.send(JSON.stringify({}));
+            });
+        });
+    });
+</script>
+{% endblock content %}
